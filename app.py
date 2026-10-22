@@ -49,7 +49,7 @@ st.markdown(
 @st.cache_resource
 def load_model():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(base_dir, "SVC.pkl")
+    model_path = os.path.join(base_dir, "kn.pkl")
     with open(model_path, "rb") as f:
         model = pickle.load(f)
     return model
@@ -128,28 +128,29 @@ with st.form("prediction_form"):
 
 # Prediction Logic
 if submit_btn:
-    # Constructing input dataframe mapped to your model's required features
+    # Encoded values helper
+    val_gender = 1 if gender == "Male" else 0
+    val_fam = 1 if family_history_diabetes == "Yes" else 0
+    val_pa = ["Low", "Moderate", "High"].index(physical_activity_level)
+    val_diet = ["Standard", "Vegetarian", "Vegan", "Keto", "Other"].index(
+        diet_type
+    )
+    val_smoke = ["Never", "Former", "Current"].index(smoking_status)
+    val_alc = ["None", "Low", "Moderate", "High"].index(alcohol_consumption)
+    val_inc = ["Low", "Medium", "High"].index(income_bracket)
+
+    # Constructing input dataframe matching all 21 features expected by the model
     input_data = pd.DataFrame(
         {
             "age": [age],
-            "gender": [1 if gender == "Male" else 0],
+            "gender": [val_gender],
             "city": [hash(city) % 100],
             "bmi": [bmi],
-            "family_history_diabetes": [
-                1 if family_history_diabetes == "Yes" else 0
-            ],
-            "physical_activity_level": [
-                ["Low", "Moderate", "High"].index(physical_activity_level)
-            ],
-            "diet_type": [
-                ["Standard", "Vegetarian", "Vegan", "Keto", "Other"].index(
-                    diet_type
-                )
-            ],
-            "smoking_status": [["Never", "Former", "Current"].index(smoking_status)],
-            "alcohol_consumption": [
-                ["None", "Low", "Moderate", "High"].index(alcohol_consumption)
-            ],
+            "family_history_diabetes": [val_fam],
+            "physical_activity_level": [val_pa],
+            "diet_type": [val_diet],
+            "smoking_status": [val_smoke],
+            "alcohol_consumption": [val_alc],
             "hours_sleep_per_night": [hours_sleep_per_night],
             "stress_level": [stress_level],
             "fasting_blood_sugar": [fasting_blood_sugar],
@@ -157,12 +158,18 @@ if submit_btn:
             "blood_pressure_systolic": [blood_pressure_systolic],
             "blood_pressure_diastolic": [blood_pressure_diastolic],
             "waist_circumference_cm": [waist_circumference_cm],
-            "income_bracket": [["Low", "Medium", "High"].index(income_bracket)],
+            "income_bracket": [val_inc],
+            "diabetes_risk": [
+                0
+            ],  # Dummy default for accidentally included target feature
+            " physical_activity_level ": [val_pa],
+            " diet_type ": [val_diet],
+            " smoking_status ": [val_smoke],
         }
     )
 
     try:
-        # Passing values via NumPy array to seamlessly handle training feature name variations
+        # Pass via NumPy array to match exact dimensions and bypass strict column key matching errors
         prediction = model.predict(input_data.to_numpy())
 
         st.markdown("<br>", unsafe_allow_html=True)
