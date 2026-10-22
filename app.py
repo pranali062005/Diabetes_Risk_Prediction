@@ -1,3 +1,4 @@
+import os
 import pickle
 import numpy as np
 import pandas as pd
@@ -44,10 +45,12 @@ st.markdown(
 )
 
 
-# Load the trained model
+# Load the trained model safely using absolute paths
 @st.cache_resource
 def load_model():
-    with open("SVC.pkl", "rb") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "kn.pkl")
+    with open(model_path, "rb") as f:
         model = pickle.load(f)
     return model
 
@@ -59,7 +62,7 @@ st.markdown(
     """
     <div style="padding: 10px 0; text-align: center;">
         <h2>Diabetes Risk Assessment Tool</h2>
-        <p style="color: #6c757d;">Fill in the patient details below to evaluate diabetes risk using the SVM model.</p>
+        <p style="color: #6c757d;">Fill in the patient clinical and lifestyle metrics below to evaluate risk using the SVM model.</p>
     </div>
 """,
     unsafe_allow_html=True,
@@ -125,15 +128,12 @@ with st.form("prediction_form"):
 
 # Prediction Logic
 if submit_btn:
-    # Note: If your model expects encoded categorical variables, ensure your preprocessing
-    # matches the training pipeline. Below is a structured example mapping user inputs.
+    # Constructing input dataframe mapped to your model's required features
     input_data = pd.DataFrame(
         {
             "age": [age],
             "gender": [1 if gender == "Male" else 0],
-            "city": [
-                hash(city) % 100
-            ],  # Placeholder encoding if city was label-encoded
+            "city": [hash(city) % 100],
             "bmi": [bmi],
             "family_history_diabetes": [
                 1 if family_history_diabetes == "Yes" else 0
@@ -141,7 +141,11 @@ if submit_btn:
             "physical_activity_level": [
                 ["Low", "Moderate", "High"].index(physical_activity_level)
             ],
-            "diet_type": [hash(diet_type) % 10],
+            "diet_type": [
+                ["Standard", "Vegetarian", "Vegan", "Keto", "Other"].index(
+                    diet_type
+                )
+            ],
             "smoking_status": [["Never", "Former", "Current"].index(smoking_status)],
             "alcohol_consumption": [
                 ["None", "Low", "Moderate", "High"].index(alcohol_consumption)
@@ -158,7 +162,9 @@ if submit_btn:
     )
 
     try:
-        prediction = model.predict(input_data)
+        # Passing values via NumPy array to seamlessly handle training feature name variations
+        prediction = model.predict(input_data.to_numpy())
+
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### Prediction Result")
 
