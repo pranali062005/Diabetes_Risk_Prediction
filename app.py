@@ -45,17 +45,41 @@ st.markdown(
 )
 
 
-# Load the trained model safely using absolute paths
+# Load the trained model safely with dynamic path resolution
 @st.cache_resource
 def load_model():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(base_dir, "kn.pkl")
+    
+    # Possible locations for the model file
+    possible_paths = [
+        os.path.join(base_dir, "SVC.pkl"),
+        os.path.join(base_dir, "models", "SVC.pkl"),
+        os.path.join(base_dir, "..", "kn.pkl"),
+    ]
+    
+    model_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            model_path = path
+            break
+            
+    if model_path is None:
+        # List files in current directory to help debug
+        files_in_dir = os.listdir(base_dir)
+        raise FileNotFoundError(
+            f"Could not find 'kn.pkl'. Files found in app directory ({base_dir}): {files_in_dir}"
+        )
+
     with open(model_path, "rb") as f:
         model = pickle.load(f)
     return model
 
 
-model = load_model()
+try:
+    model = load_model()
+except Exception as e:
+    st.error(f"Model Loading Error: {e}")
+    st.stop()
 
 # App Header
 st.markdown(
@@ -128,7 +152,6 @@ with st.form("prediction_form"):
 
 # Prediction Logic
 if submit_btn:
-    # Encoded values helper
     val_gender = 1 if gender == "Male" else 0
     val_fam = 1 if family_history_diabetes == "Yes" else 0
     val_pa = ["Low", "Moderate", "High"].index(physical_activity_level)
@@ -139,7 +162,6 @@ if submit_btn:
     val_alc = ["None", "Low", "Moderate", "High"].index(alcohol_consumption)
     val_inc = ["Low", "Medium", "High"].index(income_bracket)
 
-    # Constructing input dataframe matching all 21 features expected by the model
     input_data = pd.DataFrame(
         {
             "age": [age],
@@ -159,9 +181,7 @@ if submit_btn:
             "blood_pressure_diastolic": [blood_pressure_diastolic],
             "waist_circumference_cm": [waist_circumference_cm],
             "income_bracket": [val_inc],
-            "diabetes_risk": [
-                0
-            ],  # Dummy default for accidentally included target feature
+            "diabetes_risk": [0],
             " physical_activity_level ": [val_pa],
             " diet_type ": [val_diet],
             " smoking_status ": [val_smoke],
@@ -169,7 +189,6 @@ if submit_btn:
     )
 
     try:
-        # Pass via NumPy array to match exact dimensions and bypass strict column key matching errors
         prediction = model.predict(input_data.to_numpy())
 
         st.markdown("<br>", unsafe_allow_html=True)
