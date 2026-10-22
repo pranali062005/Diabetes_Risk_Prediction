@@ -13,31 +13,41 @@ st.set_page_config(
 )
 
 # Custom CSS for modern card layout and shadows
+# Custom CSS for modern multi-shade gradients and professional shadows
 st.markdown(
     """
     <style>
-    .main {
-        background-color: #f8f9fa;
+    /* Multi-shade professional background gradient */
+    .stApp {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        background-attachment: fixed;
     }
-    .card {
+
+    /* Elevate form containers with clean white cards and soft shadows */
+    div[data-testid="stForm"] {
         background-color: #ffffff;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.8);
     }
+
+    /* Modern gradient styling for action buttons */
     .stButton>button {
         width: 100%;
-        background-color: #ff4b4b;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        padding: 10px;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px;
         border: none;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
     }
+    
     .stButton>button:hover {
-        background-color: #e03e3e;
-        color: white;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
     }
     </style>
 """,
