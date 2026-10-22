@@ -69,8 +69,8 @@ def load_model():
     
     possible_paths = [
         os.path.join(base_dir, "kn.pkl"),
-        os.path.join(base_dir, "models", "kn.pkl"),
-        os.path.join(base_dir, "..", "kn.pkl"),
+        os.path.join(base_dir, "models", "SVC.pkl"),
+        os.path.join(base_dir, "..", "SVC.pkl"),
     ]
     
     model_path = None
