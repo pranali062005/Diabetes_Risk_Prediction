@@ -12,42 +12,49 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for modern card layout and shadows
-# Custom CSS for modern multi-shade gradients and professional shadows
+# Custom CSS for Professional Black & Blue Theme
 st.markdown(
     """
     <style>
-    /* Multi-shade professional background gradient */
+    /* Multi-shade professional black and dark-blue gradient background */
     .stApp {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        background: linear-gradient(135deg, #090a0f 0%, #111827 50%, #0f172a 100%);
         background-attachment: fixed;
+        color: #f3f4f6;
     }
 
-    /* Elevate form containers with clean white cards and soft shadows */
+    /* Dark charcoal card containers with soft blue-tinted shadows */
     div[data-testid="stForm"] {
-        background-color: #ffffff;
+        background-color: #121824;
         padding: 30px;
         border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(37, 99, 235, 0.12);
+        border: 1px solid #1e293b;
     }
 
-    /* Modern gradient styling for action buttons */
+    /* Text readability tuning for labels and headers inside the form */
+    div[data-testid="stForm"] label, 
+    div[data-testid="stForm"] h3, 
+    div[data-testid="stForm"] p {
+        color: #f3f4f6 !important;
+    }
+
+    /* Vibrant blue gradient action button with glow */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         color: white;
         font-weight: 600;
         border-radius: 10px;
         padding: 12px;
         border: none;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
         transition: all 0.3s ease;
     }
     
     .stButton>button:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
     }
     </style>
 """,
@@ -60,10 +67,9 @@ st.markdown(
 def load_model():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # Possible locations for the model file
     possible_paths = [
-        os.path.join(base_dir, "SVC.pkl"),
-        os.path.join(base_dir, "models", "SVC.pkl"),
+        os.path.join(base_dir, "kn.pkl"),
+        os.path.join(base_dir, "models", "kn.pkl"),
         os.path.join(base_dir, "..", "kn.pkl"),
     ]
     
@@ -74,7 +80,6 @@ def load_model():
             break
             
     if model_path is None:
-        # List files in current directory to help debug
         files_in_dir = os.listdir(base_dir)
         raise FileNotFoundError(
             f"Could not find 'kn.pkl'. Files found in app directory ({base_dir}): {files_in_dir}"
@@ -95,8 +100,8 @@ except Exception as e:
 st.markdown(
     """
     <div style="padding: 10px 0; text-align: center;">
-        <h2>Diabetes Risk Assessment Tool</h2>
-        <p style="color: #6c757d;">Fill in the patient clinical and lifestyle metrics below to evaluate risk using the SVM model.</p>
+        <h2 style="color: #f3f4f6;">Diabetes Risk Assessment Tool</h2>
+        <p style="color: #94a3b8;">Fill in the patient clinical and lifestyle metrics below to evaluate risk using the SVM model.</p>
     </div>
 """,
     unsafe_allow_html=True,
