@@ -47,7 +47,7 @@ st.markdown(
 # Load the trained model
 @st.cache_resource
 def load_model():
-    with open("kn.pkl", "rb") as f:
+    with open("SVC.pkl", "rb") as f:
         model = pickle.load(f)
     return model
 
